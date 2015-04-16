@@ -1,9 +1,12 @@
+package src;
+
 import java.io.*;
 import java.util.ArrayList;
 
 
-public class linkstate{
-
+public class linkstate 
+{
+	//working
 	public static int[][] fileRead(String fileName) throws IOException
 	{
 		ArrayList<String> text = new ArrayList<String>();
@@ -50,9 +53,9 @@ public class linkstate{
 		
 		for(int i = 1; i < matrix.length; i++)
 			System.out.print("\tD(" + i + "),p(" + i + ")");
-		System.out.println("--------------------------------------------------------------------------");
+		System.out.println("\n--------------------------------------------------------------------------");
 		
-		distance = matrix[0];
+		distance = matrix[0];	//set 
 		distance[0] = 0;
 		visited[0] = 1;
 		
@@ -78,14 +81,11 @@ public class linkstate{
 					if(min+matrix[nextNode][c]<distance[c]){
 						
 						distance[c]=min+matrix[nextNode][c];
-						preD[c] = nextNode;	
+						preD[c] = nextNode;
 					}	
 				}	
 			}
 		}
-		
-		for(int i = 0; i < 6; i++)
-			System.out.print("|" + distance[i]);
 		
 		System.out.print("|");
 		
