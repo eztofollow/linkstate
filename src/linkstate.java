@@ -1,11 +1,86 @@
 package src;
 
 import java.io.*;
-import java.util.ArrayList;
+import java.util.*;
 
 
 public class linkstate 
 {
+	public class Graph
+	{
+		private List<Node> vertices;
+		private List<Edge> paths;
+		
+		public class Node
+		{
+			private int id;
+			
+			public Node(int id){ this.id = id; }
+			public int getId(){ return id; }
+		}
+		
+		public class Edge
+		{
+			private Node[] ends;
+			private int distance;
+			
+			public Edge(Node[] ends, int distance)
+			{
+				this.ends = ends;
+				this.distance = distance;
+			}
+			
+			public Node getDestination(Node source)
+			{
+				return ends[0]; 
+			}
+			public int getDistance(){ return distance; }
+		}
+		
+		public Graph(int[][] map)
+		{
+			//declare and store n nodes, n = map rows
+			for(int i = 1; i <= map.length; i++)
+				vertices.add(new Node(i));
+				
+			for(int i = 0; i < map.length; i++)
+			{
+				for(int j = 0; j < map.length; j++)
+				{
+					add();
+					Node[] nodes = {vertices.get(i), vertices.get(j)};
+					paths.add(new Edge(nodes, map[i][j]));
+				}
+			}
+			
+		}
+		
+		public void add()
+		{
+			
+		}
+		
+		public List<Node> getVertices()
+		{
+			return vertices;
+		}
+		
+		public List<Edge> getPaths()
+		{
+			return paths;
+		}
+	}
+	
+	public static void dijkstra(Graph map)
+	{
+		private final List<Vertex> nodes;
+		private final List<Edge> edges;
+		private Set<Vertex> settledNodes;
+		private Set<Vertex> unSettledNodes;
+		private Map<Vertex, Vertex> predecessors;
+		private Map<Vertex, Integer> distance;
+	}
+	
 	//working
 	public static int[][] fileRead(String fileName) throws IOException
 	{
@@ -40,66 +115,17 @@ public class linkstate
 	
 	public static void main(String[] args) throws IOException{
 		
-		int[][] matrix = fileRead("network.txt"); // TODO: make sure it's args[0]
+		int[][] map = fileRead("network.txt"); // TODO: make sure it's args[0]
+		Graph network = new Graph(map);
 		
-		int[] distance = new int[matrix.length];
-		int[] visited = new int[matrix.length];
-		int[] preD = new int[matrix.length];
-		int min;
-		int nextNode = 0;
-		
-		System.out.println("--------------------------------------------------------------------------");
+		System.out.println("---------------------------------------------------------------------------------------------");
 		System.out.print("Step\tN\'");
 		
-		for(int i = 1; i < matrix.length; i++)
+		for(int i = 1; i < map.length; i++)
 			System.out.print("\tD(" + i + "),p(" + i + ")");
-		System.out.println("\n--------------------------------------------------------------------------");
+		System.out.println("\n---------------------------------------------------------------------------------------------");
 		
-		distance = matrix[0];	//set 
-		distance[0] = 0;
-		visited[0] = 1;
-		
-		//algorithm starts here
-		
-		for(int i = 0; i < 6; i++)
-		{	
-			min = 999;
-			
-			for(int j = 0; j < 6; j++){
-				if(min > distance[j] && visited[j]!=1){
-					
-					min = distance[j];
-					nextNode = j;
-				}
-			}
-			
-			visited[nextNode] = 1;
-			
-			// now we start the actual algorithm
-			for(int c =0; c < 6; c++){
-				if(visited[c]!=1){
-					if(min+matrix[nextNode][c]<distance[c]){
-						
-						distance[c]=min+matrix[nextNode][c];
-						preD[c] = nextNode;
-					}	
-				}	
-			}
-		}
-		
-		System.out.print("|");
-		
-		//for printing paths
-		for(int i = 0; i < 6; i++){
-			int j = i;
-			System.out.println("\nPath = " + i);
-			
-			do{
-				
-				j = preD[j];
-				System.out.print(" <- " + j); 
-			}while(j != 0);
-		}
+		dijkstra(network);
 		
 	}
 
