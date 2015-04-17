@@ -6,36 +6,44 @@ import java.util.*;
 
 public class linkstate 
 {
+	public class Node
+	{
+		private int id;
+		
+		public Node(int id){ this.id = id; }
+		public int getId(){ return id; }
+	}
+	
+	public class Edge
+	{
+		private Node[] ends;
+		private int distance;
+		
+		public Edge(Node[] ends, int distance)
+		{
+			this.ends = ends;
+			this.distance = distance;
+		}
+		
+		public Node getDestination(Node source)
+		{
+			return ends[0]; 
+		}
+		public int getDistance(){ return distance; }
+		
+		public boolean isEqual(Edge imposter)
+		{
+			if( (this.ends[0] == imposter.ends[0] && this.ends[1] == imposter.ends[1])
+					|| (this.ends[0] == imposter.ends[1] && this.ends[1] == imposter.ends[0]))
+				return true;
+			return false;
+		}
+	}
+	
 	public class Graph
 	{
-		private List<Node> vertices;
-		private List<Edge> paths;
-		
-		public class Node
-		{
-			private int id;
-			
-			public Node(int id){ this.id = id; }
-			public int getId(){ return id; }
-		}
-		
-		public class Edge
-		{
-			private Node[] ends;
-			private int distance;
-			
-			public Edge(Node[] ends, int distance)
-			{
-				this.ends = ends;
-				this.distance = distance;
-			}
-			
-			public Node getDestination(Node source)
-			{
-				return ends[0]; 
-			}
-			public int getDistance(){ return distance; }
-		}
+		private ArrayList<Node> vertices;
+		private ArrayList<Edge> paths;
 		
 		public Graph(int[][] map)
 		{
@@ -47,25 +55,29 @@ public class linkstate
 			{
 				for(int j = 0; j < map.length; j++)
 				{
-					add();
 					Node[] nodes = {vertices.get(i), vertices.get(j)};
-					paths.add(new Edge(nodes, map[i][j]));
+					Edge temp = new Edge(nodes, map[i][j]);
+					addPath(temp);
 				}
 			}
-			
 		}
 		
-		public void add()
+		//Performs the add-to-EdgeList operation 
+		public void addPath(Edge path)
 		{
-			
+			for(Edge e : paths)
+			{
+				if(e.isEqual(path))
+					paths.add(path);
+			}
 		}
 		
-		public List<Node> getVertices()
+		public ArrayList<Node> getVertices()
 		{
 			return vertices;
 		}
 		
-		public List<Edge> getPaths()
+		public ArrayList<Edge> getPaths()
 		{
 			return paths;
 		}
@@ -73,12 +85,20 @@ public class linkstate
 	
 	public static void dijkstra(Graph map)
 	{
-		private final List<Vertex> nodes;
-		private final List<Edge> edges;
-		private Set<Vertex> settledNodes;
-		private Set<Vertex> unSettledNodes;
-		private Map<Vertex, Vertex> predecessors;
-		private Map<Vertex, Integer> distance;
+		ArrayList<Node> vertices = map.getVertices();
+		ArrayList<Edge> paths = map.getPaths();
+		int[] distances = new int[vertices.size()];
+		ArrayList<Node> visited = new ArrayList<Node>();
+		
+		//initialize distances and visitation
+		for(int i = 0; i < vertices.size(); i++)
+		{
+			distances[i] = 4007;
+			visited.add(vertices.get(i));
+		}
+		
+		for()
+		
 	}
 	
 	//working
@@ -116,7 +136,9 @@ public class linkstate
 	public static void main(String[] args) throws IOException{
 		
 		int[][] map = fileRead("network.txt"); // TODO: make sure it's args[0]
-		Graph network = new Graph(map);
+		linkstate program = new linkstate();
+		
+		linkstate.Graph network = program.new Graph(map);
 		
 		System.out.println("---------------------------------------------------------------------------------------------");
 		System.out.print("Step\tN\'");
@@ -126,7 +148,5 @@ public class linkstate
 		System.out.println("\n---------------------------------------------------------------------------------------------");
 		
 		dijkstra(network);
-		
 	}
-
 }
