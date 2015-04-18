@@ -53,10 +53,12 @@ public class linkstate {
 		private ArrayList<Edge> paths;
 
 		public Graph(int[][] map) {
+			vertices = new ArrayList<Node>();
 			// initialize and store n nodes, n = map rows
 			for (int i = 1; i <= map.length; i++)
 				vertices.add(new Node(i));
 
+			paths = new ArrayList<Edge>();
 			// initialize paths for all nodes
 			for (int i = 0; i < map.length; i++) {
 				for (int j = 0; j < map.length; j++) {
@@ -72,10 +74,15 @@ public class linkstate {
 
 		// Performs the add-to-EdgeList operation
 		public void addPath(Edge path) {
-			for (Edge e : paths) {
-				if (e.isEqual(path))
-					paths.add(path);
-			}
+			//TODO: why aren't edges being added, ARGH
+			/*if(paths.isEmpty())
+				paths.add(path);		TODO:this is causing errors that I don't know about
+			else{*/
+				for (Edge e : paths) {
+					if (!e.isEqual(path))
+						paths.add(path);
+				}
+			//}
 		}
 
 		public ArrayList<Node> getVertices() {
@@ -85,13 +92,25 @@ public class linkstate {
 		public ArrayList<Edge> getPaths() {
 			return paths;
 		}
+		
+		public int getDistance(Node n1, Node n2) {
+			for(Edge e: paths)
+			{
+				if(e.contains(n1) && e.contains(n2))
+				{
+					return e.getDistance();
+				}
+			}
+			
+			return 4007;
+		}
 	}
 
-	public static void dijkstra(Graph map) {
+	public void dijkstra(Graph map) {
 		ArrayList<Node> vertices = map.getVertices();
 		ArrayList<Edge> paths = map.getPaths();
 
-		// contains current path details from node 1
+		// contains last path detail from node 1 to target index
 		int[] path = new int[vertices.size() - 1];
 		// contains best distance for path i
 		int[] distances = new int[vertices.size() - 1];
@@ -102,6 +121,7 @@ public class linkstate {
 		// initializes best distances for node 1
 		int count = 0;
 		for (Edge e : paths) {
+			
 			if (e.contains(vertices.get(0))) {
 				distances[count] = e.getDistance();
 				count++;
@@ -111,38 +131,44 @@ public class linkstate {
 				break;
 		}
 
+		Node lastNode = null;
 		// finds best total path for node 1 to current Node
-		for (Node node : vertices) {
+		for(int step = 0; step < vertices.size(); step++){
+			
 			int best = 4007;
-
-			for (int i = 0; i < 5; i++) {
-
-				if (min > distance[i] && visited[i] != 1) {
-
-					min = distance[i];
-					nextNode = i;
-
+			
+			//find best node to continue on
+			for(int i = 0; i < distances.length; i++)
+			{
+				if(best > distances[i] && visited[i] != 1)
+				{
+					best = distances[i];
+					lastNode = vertices.get(i + 1);
 				}
-
 			}
-
-			visited[nextNode] = 1;
-
-			for (int i = 0; i < 5; i++) {
-
-				if (visited[i] != 1) {
-
-					if (min + matrix[nextNode][i] < distance[i]) {
-
-						distance[i] = min + matrix[nextNode][i];
-						preD[i] = nextNode;
-
-					}
-
+			
+			System.out.print(step + "\t1");
+			for(int i = 0; i < visited.length; i++)
+			{
+				if(visited[i] == 1)
+					System.out.print("," + (i + 1) + " ");
+			}
+			
+			visited[lastNode.getId() - 1] = 1;
+			
+			//finds cheapest path distances from current path to target i
+			for(int i = 0; i < visited.length; i++)
+			{
+				if(best + map.getDistance(lastNode, vertices.get(i + 1)) < distances[i] && visited[i] != 1)
+				{
+					distances[i] = best + map.getDistance(lastNode, vertices.get(i + 1));
+					path[i] = lastNode.getId();
 				}
-
 			}
-
+			
+			for(int i = 0; i < visited.length; i++)
+				System.out.print("\t\t" + distances[i] + ", " + path[i]);
+			System.out.println("\n---------------------------------------------------------------------------------------------");
 		}
 	}
 
@@ -176,18 +202,18 @@ public class linkstate {
 
 	public static void main(String[] args) throws IOException {
 
-		int[][] map = fileRead("network.txt"); // TODO: make sure it's args[0]
+		int[][] map = fileRead(args[0]); // TODO: make sure it's args[0]
 		linkstate program = new linkstate();
 
-		linkstate.Graph network = program.new Graph(map);
-
+		Graph network = program.new Graph(map);
+		
 		System.out.println("---------------------------------------------------------------------------------------------");
 		System.out.print("Step\tN\'");
 
 		for (int i = 1; i < map.length; i++)
-			System.out.print("\tD(" + i + "),p(" + i + ")");
+			System.out.print("\tD(" + (i + 1) + "),p(" + (i + 1) + ")");
 		System.out.println("\n---------------------------------------------------------------------------------------------");
 
-		dijkstra(network);
+		program.dijkstra(network);
 	}
 }
