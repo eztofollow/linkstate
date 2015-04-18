@@ -148,16 +148,12 @@ public class linkstate {
 			//find best node to continue on
 			for(int i = 0; i < distances.length; i++)
 			{
-				//System.out.println("distance " + (i + 2) + "=" + distances[i]);			//TODO
-				//System.out.println(visited[i]);											//TODO
 				//if possible path distance is better and the path has not been taken, replace best distance
 				if(best > distances[i] && visited[i] != 1)
 				{
 					best = distances[i];
 					//also places that node into the lastNode( taken in path step)
-					//System.out.println("vertex: " + vertices.get(i + 1).getId());		//TODO
 					lastNode = vertices.get(i + 1);
-					//System.out.println("lastNode id: " + lastNode.getId());			//TODO
 				}
 			}
 			
@@ -166,32 +162,24 @@ public class linkstate {
 			for(int i = 0; i < visited.length; i++)
 			{
 				if(visited[i] == 1)
-					System.out.print(", " + (i + 1));
+					System.out.print(", " + (i + 2));
 			}
 			
-			visited[lastNode.getId()] = 1;
-			//System.out.println("\nlastNode visited " + lastNode.getId() + " "+ visited[lastNode.getId()-1]);	//TODO
+			visited[lastNode.getId() - 2] = 1;
 			
 			for(int i = 0; i < visited.length; i++)
-				System.out.print("\t\t" + distances[i] + ", " + path[i]);
-			System.out.println("\n---------------------------------------------------------------------------------------------");
+				System.out.print("\t\t\t" + distances[i] + ", " + path[i]);
+			System.out.println("\n-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------");
 			
 			//finds cheapest path distances from current path to target i
 			for(int i = 0; i < visited.length; i++)
 			{
-				if(step == 2)
-				{
-					System.out.println("visited[" + i + "]= " + visited[i]);						//TODO
-					System.out.println("vertex" + i + "= " + vertices.get(i + 1).getId());			//TODO
-				}
-				
 				if( (visited[i] != 1) && (best + map.getDistance(lastNode, vertices.get(i + 1)) < distances[i]) )
 				{
 					distances[i] = best + map.getDistance(lastNode, vertices.get(i + 1));
 					path[i] = lastNode.getId();
 				}
 			}
-			//System.out.println("next 5 distance: " + distances[4]);				//TODO
 		}
 	}
 
@@ -230,12 +218,12 @@ public class linkstate {
 
 		Graph network = program.new Graph(map);
 		
-		System.out.println("---------------------------------------------------------------------------------------------");
-		System.out.print("Step\tN\'");
+		System.out.println("-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------");
+		System.out.format("Step\tN\'");
 
 		for (int i = 1; i < map.length; i++)
-			System.out.print("\tD(" + (i + 1) + "),p(" + (i + 1) + ")");
-		System.out.println("\n---------------------------------------------------------------------------------------------");
+			System.out.print("\t\t\tD(" + (i + 1) + "),p(" + (i + 1) + ")");
+		System.out.println("\n-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------");
 
 		program.dijkstra(network);
 	}
