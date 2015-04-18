@@ -26,7 +26,10 @@ public class linkstate {
 		}
 
 		public Node getDestination(Node source) {
-			return ends[0];
+			if( ends[0].equals(source) )
+				return ends[1];
+			else
+				return ends[0];
 		}
 
 		public int getDistance() {
@@ -34,8 +37,8 @@ public class linkstate {
 		}
 
 		public boolean contains(Node n) {
-			return (this.ends[0].getId() == n.getId())
-					|| (this.ends[1].getId() == n.getId());
+			return ( (this.ends[0].getId() == n.getId())
+					|| (this.ends[1].getId() == n.getId()) );
 		}
 
 		public boolean isEqual(Edge imposter) {
@@ -57,8 +60,8 @@ public class linkstate {
 			// initialize and store n nodes, n = map rows
 			for (int i = 1; i <= map.length; i++)
 				vertices.add(new Node(i));
-
 			paths = new ArrayList<Edge>();
+			
 			// initialize paths for all nodes
 			for (int i = 0; i < map.length; i++) {
 				for (int j = 0; j < map.length; j++) {
@@ -75,14 +78,17 @@ public class linkstate {
 		// Performs the add-to-EdgeList operation
 		public void addPath(Edge path) {
 			//TODO: why aren't edges being added, ARGH
-			/*if(paths.isEmpty())
-				paths.add(path);		TODO:this is causing errors that I don't know about
-			else{*/
+			boolean pass = false;
+			if(paths.isEmpty())
+				pass = true;
+			else{
 				for (Edge e : paths) {
 					if (!e.isEqual(path))
-						paths.add(path);
+						pass = true;
+					
 				}
-			//}
+			}
+			if(pass) paths.add(path);
 		}
 
 		public ArrayList<Node> getVertices() {
@@ -110,8 +116,6 @@ public class linkstate {
 		ArrayList<Node> vertices = map.getVertices();
 		ArrayList<Edge> paths = map.getPaths();
 
-		// contains last path detail from node 1 to target index
-		int[] path = new int[vertices.size() - 1];
 		// contains best distance for path i
 		int[] distances = new int[vertices.size() - 1];
 		// for designating paths that were already visited, #remember to +1
@@ -121,54 +125,62 @@ public class linkstate {
 		// initializes best distances for node 1
 		int count = 0;
 		for (Edge e : paths) {
-			
 			if (e.contains(vertices.get(0))) {
 				distances[count] = e.getDistance();
 				count++;
 			}
 
-			if (vertices.size() == count)
+			if (vertices.size() - 1 == count)
 				break;
 		}
 
+		// contains last path detail from node 1 to target index
+		int[] path = new int[vertices.size() - 1];
+		
+		for(int i = 0; i < vertices.size() - 1; i++)
+			path[i] = 1;
+		
 		Node lastNode = null;
 		// finds best total path for node 1 to current Node
 		for(int step = 0; step < vertices.size(); step++){
-			
 			int best = 4007;
 			
 			//find best node to continue on
 			for(int i = 0; i < distances.length; i++)
 			{
+				//if possible path distance is better and the path has not been taken, replace best distance
 				if(best > distances[i] && visited[i] != 1)
 				{
 					best = distances[i];
+					//also places that node into the lastNode( taken in path step)
+				
 					lastNode = vertices.get(i + 1);
 				}
 			}
 			
+			//Print current path of step
 			System.out.print(step + "\t1");
 			for(int i = 0; i < visited.length; i++)
 			{
 				if(visited[i] == 1)
-					System.out.print("," + (i + 1) + " ");
+					System.out.print(", " + (i + 1));
 			}
 			
-			visited[lastNode.getId() - 1] = 1;
+			visited[lastNode.getId()-1] = 1;
+			
+			for(int i = 0; i < visited.length; i++)
+				System.out.print("\t\t" + distances[i] + ", " + path[i]);
+			System.out.println("\n---------------------------------------------------------------------------------------------");
 			
 			//finds cheapest path distances from current path to target i
 			for(int i = 0; i < visited.length; i++)
 			{
-				if(best + map.getDistance(lastNode, vertices.get(i + 1)) < distances[i] && visited[i] != 1)
+				if(visited[i] != 1 && best + map.getDistance(lastNode, vertices.get(i + 1)) < distances[i])
 				{
 					distances[i] = best + map.getDistance(lastNode, vertices.get(i + 1));
 					path[i] = lastNode.getId();
 				}
 			}
-			
-			for(int i = 0; i < visited.length; i++)
-				System.out.print("\t\t" + distances[i] + ", " + path[i]);
-			System.out.println("\n---------------------------------------------------------------------------------------------");
 		}
 	}
 
@@ -202,7 +214,7 @@ public class linkstate {
 
 	public static void main(String[] args) throws IOException {
 
-		int[][] map = fileRead(args[0]); // TODO: make sure it's args[0]
+		int[][] map = fileRead("network.txt"); // TODO: make sure it's args[0]
 		linkstate program = new linkstate();
 
 		Graph network = program.new Graph(map);
